@@ -96,6 +96,7 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 412);
         }
+        
         $bookings = booking::find($id);
         $bookings->start_date = $input['start_date'];
         $bookings->end_date = $input['end_date'];

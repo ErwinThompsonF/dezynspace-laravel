@@ -14,8 +14,6 @@ use Illuminate\Http\Request;
 */
 
 
-
-Route::group(['middleware' => 'cors'], function () {
     Route::post('/admin/register', 'UserController@RegisterAdmin');
     Route::post('/admin/login', 'UserController@LoginAdmin');
 
@@ -57,5 +55,3 @@ Route::group(['middleware' => 'cors'], function () {
 
         });
     });
-});
-

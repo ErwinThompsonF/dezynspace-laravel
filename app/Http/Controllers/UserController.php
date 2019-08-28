@@ -85,7 +85,7 @@ class UserController extends Controller
         $validator = Validator::make($input, [
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
-            'street' => 'required|max:100',
+            // 'street' => 'required|max:100',
             'country' => 'required|string',
             // 'city' => 'required|string',
             // 'zip_code' => 'required|max:4',
