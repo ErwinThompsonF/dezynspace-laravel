@@ -103,15 +103,30 @@ class BookingController extends Controller
         $bookings->status = $input['status'];
         $bookings->save();
 
-        if($bookings->end_date != $input['end_date'])
+        if($input['status'] == 'assign')
+        {
+            $schedule = schedule::whereBetween('schedule', array($input['start_date'], $input['end_date']))
+            ->where('designerId', $input['designerid'])
+            ->update([ "status" => 0 ]);    
+        }
+        else if($input['status'] == 'reassign')
+        {
+            $schedule = schedule::whereBetween('schedule', array($bookings->start_date, $bookings->end_date))
+            ->where('designerId', $bookings->designerId)
+            ->update([ "status" => 1 ]);
+
+            $schedule = schedule::whereBetween('schedule', array($input['start_date'], $input['end_date']))
+            ->where('designerId', $input['designerid'])
+            ->update([ "status" => 0 ]);    
+        }
+        else if($input['status'] == 'extending')
         {
             $payment = PaymentTrait::createPayment("100", $this->api_context);
-            // return response()->json($payment);
-        }
 
-        $schedule = schedule::whereBetween('schedule', array($input['start_date'], $input['end_date']))
-        ->where('designerId', $input['designerid'])
-        ->update([ "status" => 0 ]);
+            $schedule = schedule::whereBetween('schedule', array($input['start_date'], $input['end_date']))
+            ->where('designerId', $bookings->designerId)
+            ->update([ "status" => 0 ]);
+        }
 
         return response()->json(["message" => $schedule && $bookings ?  "Booking updated successfully"  : "Internal Server Error"], $schedule && $bookings ? 200 : 500);
     }
