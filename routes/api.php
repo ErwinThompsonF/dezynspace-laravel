@@ -41,7 +41,7 @@ use Illuminate\Http\Request;
 
             // BOOKINGS
             Route::get('bookings', 'BookingController@Read');
-            Route::get('available/designer/{id}', 'BookingController@UpdateShow');
+            Route::get('booking/{id}', 'BookingController@UpdateShow');
             Route::put('booking/{id}', 'BookingController@Update');
 
             // QUESTIONS

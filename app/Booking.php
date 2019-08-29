@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     protected $fillable = [
-        'plan','clientId','designerId''paypal_id','start_date','end_date','report_time','timezone','price','status','payment_status'
+        'plan','clientId','designerId','paypal_id','start_date','end_date','report_time','timezone','price','status','payment_status'
     ];
 
     public function client()
@@ -17,5 +17,9 @@ class Booking extends Model
     public function designer()
     {
         return $this->belongsTo('App\Designer', 'designerId');
+    }    
+    public function answer()
+    {
+        return $this->hasOne('App\Answer', 'bookingId','id');
     }
 }

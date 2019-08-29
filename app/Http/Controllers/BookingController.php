@@ -3,11 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Booking;
 use App\Schedule;
 use App\Designer;
 use App\Answer;
 use App\Traits\PaymentTrait;
+use PayPal\Rest\ApiContext;
+use PayPal\Auth\OAuthTokenCredential;
+use Illuminate\Support\Facades\Log;
+use DateTime;
+use Carbon\Carbon;
+
 
 class BookingController extends Controller
 {
@@ -25,7 +32,8 @@ class BookingController extends Controller
 
     public function create(Request $request)
     {
-        $validator = Validator::make($request, [
+        $input = $request->all();
+        $validator = Validator::make($input, [
             'plan' => 'required|string',
             'clientId' => 'required|numeric',
             'start_date' => 'required|date',
@@ -46,19 +54,21 @@ class BookingController extends Controller
             'ans11' => 'required|string',
 
         ]);
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 412);
         }
-        if (booking::where([['YEAR(created_at)', '2019'], ['MONTH(created_at)', '09']])->orWhere([['YEAR(created_at)', '2019'], ['MONTH(created_at)', '10']])->count() >= 50)
+        if (booking::whereRaw('YEAR(created_at) = "2019" AND MONTH(created_at) = "09"')->orWhereRaw('YEAR(created_at) = "2019" AND MONTH(created_at) = "10"')->count() >= 50)
             return response()->json(["message" => "Booking exceeded"], 412);
 
-        $request->status = "Unpaid";
-        $bookings = booking::create($request);
-        $request->userId = $request->clientId;
-        $answer = answer::create($request);
+        $input['status'] = "Unpaid";
+        $bookings = booking::create($input);
+        $input['bookingId'] = $bookings->id;
+        $answer = answer::create($input);
 
+        $payment = PaymentTrait::createPayment($input['price'], $this->api_context);
 
-        return response()->json(["message" =>  $bookings && $answer ? "Added a booking succesfully" : "Internal Server Error"], $bookings && $answer ? 200 : 500);
+        return response()->json(["message" =>  $bookings && $answer ? $payment : "Internal Server Error"], $bookings && $answer ? 200 : 500);
     }
 
     public function Read()
@@ -70,13 +80,18 @@ class BookingController extends Controller
     public function UpdateShow($id)
     {
         $bookings = booking::find($id);
-        $schedule = schedule::whereBetween('schedule', array($bookings->start_date, $bookings->end_date))->with('designer.user')->get();
-        foreach ($schedule as $sku) {
-            if ($sku->status == 0) {
-                $schedule = $schedule->filter(function ($item) use ($sku) {
-                    return $item->designerId != $sku->designerId;
-                })->values();
-        }}
+        $schedule = schedule::selectRaw('count(schedule) as schedulecount,designerId,status')
+                ->whereBetween('schedule', array($bookings->start_date, $bookings->end_date))
+                ->with('designer.user')
+                ->groupBy(['designerId', 'status'])        
+                ->get();
+                
+        $from = Carbon::parse($bookings->start_date);
+        $to = Carbon::parse($bookings->end_date);
+        $days = $to->diffInDays($from);
+        $schedule = $schedule->filter(function ($item) use($days) {
+            return $item->schedulecount == $days + 1 && $item->status != 0;
+        })->values();
 
         return response()->json(["message" => $schedule ?  ["details" => $bookings, "designers" => $schedule->unique('designerId')] : "Internal Server Error"], $schedule ? 200 : 500);
     }
@@ -89,8 +104,7 @@ class BookingController extends Controller
         $validator = Validator::make($input, [
             'start_date' => 'date',
             'end_date' => 'date',
-            'designerid' => 'numeric',
-            'action_type' => 'string',
+            'designerId' => 'numeric',
             'status' => 'string',
         ]);
         if ($validator->fails()) {
@@ -98,16 +112,12 @@ class BookingController extends Controller
         }
         
         $bookings = booking::find($id);
-        $bookings->start_date = $input['start_date'];
-        $bookings->end_date = $input['end_date'];
-        $bookings->designerId = $input['designerid'];
-        $bookings->status = $input['status'];
-        $bookings->save();
+       
 
         if($input['status'] == 'assign')
         {
             $schedule = schedule::whereBetween('schedule', array($input['start_date'], $input['end_date']))
-            ->where('designerId', $input['designerid'])
+            ->where('designerId', $input['designerId'])
             ->update([ "status" => 0 ]);    
         }
         else if($input['status'] == 'reassign')
@@ -117,17 +127,33 @@ class BookingController extends Controller
             ->update([ "status" => 1 ]);
 
             $schedule = schedule::whereBetween('schedule', array($input['start_date'], $input['end_date']))
-            ->where('designerId', $input['designerid'])
+            ->where('designerId', $input['designerId'])
             ->update([ "status" => 0 ]);    
         }
         else if($input['status'] == 'extending')
         {
-            $payment = PaymentTrait::createPayment("100", $this->api_context);
-
+            $from = Carbon::parse($bookings->end_date);
+            $to = Carbon::parse($input['end_date']);
+            $payment = PaymentTrait::createPayment($bookings->price / $bookings->plan * $to->diffInWeekdays($from), $this->api_context);
+            
             $schedule = schedule::whereBetween('schedule', array($input['start_date'], $input['end_date']))
             ->where('designerId', $bookings->designerId)
             ->update([ "status" => 0 ]);
+
+            $bookings->start_date = $input['start_date'];
+            $bookings->end_date = $input['end_date'];
+            $bookings->designerId = $input['designerId'];
+            $bookings->status = $input['status'];
+            $bookings->save();
+
+            return response()->json(["message" => $schedule && $bookings ?  $payment  : "Internal Server Error"], $schedule && $bookings ? 200 : 500);    
         }
+
+        $bookings->start_date = $input['start_date'];
+        $bookings->end_date = $input['end_date'];
+        $bookings->designerId = $input['designerId'];
+        $bookings->status = $input['status'];
+        $bookings->save();
 
         return response()->json(["message" => $schedule && $bookings ?  "Booking updated successfully"  : "Internal Server Error"], $schedule && $bookings ? 200 : 500);
     }

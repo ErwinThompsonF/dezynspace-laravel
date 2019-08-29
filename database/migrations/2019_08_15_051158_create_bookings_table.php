@@ -21,14 +21,14 @@ class CreateBookingsTable extends Migration
             $table->foreign('clientId')->references('id')->on('users');
             $table->unsignedBigInteger('designerId')->nullable();
             $table->foreign('designerId')->references('id')->on('designers');
-            $table->string('paypal_id');
+            $table->string('paypal_id')->nullable();
             $table->date('start_date');
             $table->date('end_date');
             $table->string('report_time');
             $table->string('timezone');
-            $table->integer('price');
-            $table->string('status');
-            $table->string('payment_status');
+            $table->float('price');
+            $table->decimal('status',4,2);
+            $table->string('payment_status')->nullable();
             $table->timestamps();
         });
     }

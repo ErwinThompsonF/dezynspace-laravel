@@ -7,15 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Answer extends Model
 {
     protected $fillable = [
-        'questionId','userId','answer'
+        'bookingId','ans1','ans2','ans3','ans4','ans5','ans6','ans7','ans8','ans9','ans10','ans11'
     ];
 
-    public function answer()
+    public function booking()
     {
-        return $this->belongsTo('App\Question', 'questionId');
-    }
-    public function user()
-    {
-        return $this->belongsTo('App\User', 'userId');
+        return $this->belongsTo('App\Booking', 'bookingId');
     }
 }

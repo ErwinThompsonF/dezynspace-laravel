@@ -23,11 +23,11 @@ trait PaymentTrait
         $payer = new Payer();
         $payer->setPaymentMethod('paypal');
         $item = new Item();
-        $item->setName('Paypal Payment')->setCurrency('PHP')->setQuantity(1)->setPrice($pay_amount);
+        $item->setName('Paypal Payment')->setCurrency('USD')->setQuantity(1)->setPrice($pay_amount);
         $itemList = new ItemList();
         $itemList->setItems(array($item));
         $amount = new Amount();
-        $amount->setCurrency('PHP')->setTotal($pay_amount);
+        $amount->setCurrency('USD')->setTotal($pay_amount);
         $transaction = new Transaction();
         $transaction->setAmount($amount)->setItemList($itemList)
         ->setDescription('Laravel Paypal Payment Tutorial');

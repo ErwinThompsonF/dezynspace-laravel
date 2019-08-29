@@ -14,6 +14,7 @@
         "laravel/framework": "5.8.*",
         "laravel/passport": "^7.3",
         "laravel/tinker": "^1.0",
+        "nesbot/carbon": "^2.23",
         "paypal/rest-api-sdk-php": "^1.14",
         "pragmarx/countries": "^0.6.0"
     },
