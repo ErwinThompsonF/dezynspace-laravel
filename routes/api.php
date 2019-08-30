@@ -62,6 +62,7 @@ use Illuminate\Http\Request;
             });
 
             Route::post('booking', 'BookingController@Create');
+            Route::get('cbookings', 'BookingController@ReadC');
 
         });
     });

@@ -78,6 +78,12 @@ class BookingController extends Controller
         return response()->json(["message" => $bookings ? $bookings : "Internal Server Error"], $bookings ? 200 : 500);
     }
 
+    public function ReadC(Request $request)
+    {
+        $bookings = booking::with('designer')->where('clientId', $request->user()->id)->get();
+        return response()->json(["message" => $bookings ? $bookings : "Internal Server Error"], $bookings ? 200 : 500);
+    }
+
     public function UpdateShow($id)
     {
         $bookings = booking::with(['client', 'client.address','answer'])->find($id);
