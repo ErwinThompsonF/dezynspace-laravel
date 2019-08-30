@@ -25,7 +25,7 @@ use Illuminate\Http\Request;
     Route::get('asia', 'CountryController@CountriesAsia');
     Route::post('city', 'CountryController@City');
     Route::post('/checkout', 'PaypalController@createPayment')->name('create-payment');
-    Route::get('/confirm/{id}', 'PaypalController@confirmPayment')->name('confirm-payment');
+    Route::get('/confirm', 'PaypalController@confirmPayment')->name('confirm-payment');
 
     Route::group(['middleware' => 'auth:api'], function () {
 

@@ -37,7 +37,7 @@ class PaypalController extends Controller
             return response()->json($payment);
         }
     
-        public function confirmPayment(Request $request,$id)
+        public function confirmPayment(Request $request)
         {
             if (empty($request->query('paymentId')) || empty($request->query('PayerID')) || empty($request->query('token')))
                 return response()->json('Payment was not successful.');
@@ -47,9 +47,9 @@ class PaypalController extends Controller
             $result = $payment->execute($execution, $this->api_context);
             if ($result->getState() != 'approved')
                 return response()->json('Payment was not successful.');
-            $booking = booking::find($id);
-            $booking->paypal_id = $result->getId();
-            $booking->payment_status = "paid";
+            // $booking = booking::find($id);
+            // $booking->paypal_id = $result->getId();
+            // $booking->payment_status = "paid";
             return response()->json('Payment made successfully');
         }
 }
