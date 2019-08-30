@@ -35,7 +35,7 @@ class BookingController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'plan' => 'required|string',
-            'clientId' => 'required|numeric',
+            // 'clientId' => 'required|numeric',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
             'report_time' => 'required|string',
@@ -51,7 +51,6 @@ class BookingController extends Controller
             'ans8' => 'required|string',
             'ans9' => 'required|string',
             'ans10' => 'required|string',
-            'ans11' => 'required|string',
 
         ]);
 
@@ -61,6 +60,7 @@ class BookingController extends Controller
         if (booking::whereRaw('YEAR(created_at) = "2019" AND MONTH(created_at) = "09"')->orWhereRaw('YEAR(created_at) = "2019" AND MONTH(created_at) = "10"')->count() >= 50)
             return response()->json(["message" => "Booking exceeded"], 412);
 
+        $input['clientId'] = $request->user()->id;
         $input['status'] = "Unpaid";
         $bookings = booking::create($input);
         $input['bookingId'] = $bookings->id;

@@ -36,7 +36,6 @@ use Illuminate\Http\Request;
             Route::get('/atoken', function () {
                 return ['message' => 'Token is valid'];
             });
-
             // DESIGNER
             Route::post('designer', 'UserController@Create');
             Route::post('designer/schedule', 'UserController@CreateSchedule');

@@ -30,7 +30,6 @@ class UserController extends Controller
             return response()->json(["error" => 'Email or Password is Invalid / Account not Activated'], 412);
         }
     }
-
     public function RegisterAdmin(Request $request)
     {
 

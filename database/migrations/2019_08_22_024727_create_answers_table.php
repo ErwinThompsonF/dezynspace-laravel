@@ -27,7 +27,6 @@ class CreateAnswersTable extends Migration
             $table->string('ans8');
             $table->string('ans9');
             $table->string('ans10');
-            $table->string('ans11');
             $table->timestamps();
         });
     }
