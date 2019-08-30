@@ -29,6 +29,10 @@ use Illuminate\Http\Request;
 
     Route::group(['middleware' => 'auth:api'], function () {
 
+        Route::get('/validate-token', function () {
+            return ['message' => 'Token is valid'];
+        });
+        
         Route::group(['middleware' => 'scope:Admin'], function () {
 
             // DESIGNER
