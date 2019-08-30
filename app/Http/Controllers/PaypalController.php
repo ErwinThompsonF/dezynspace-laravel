@@ -47,9 +47,11 @@ class PaypalController extends Controller
             $result = $payment->execute($execution, $this->api_context);
             if ($result->getState() != 'approved')
                 return response()->json('Payment was not successful.');
+
             $booking = booking::find($id);
             $booking->paypal_id = $result->getId();
             $booking->payment_status = "paid";
+            $booking->save();
             return response()->json('Payment made successfully');
         }
 }
