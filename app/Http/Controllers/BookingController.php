@@ -61,7 +61,8 @@ class BookingController extends Controller
             return response()->json(["message" => "Booking exceeded"], 412);
 
         $input['clientId'] = $request->user()->id;
-        $input['status'] = "Unpaid";
+        $input['status'] = "For assignment";
+        $input['payment_status'] = "unpaid";
         $bookings = booking::create($input);
         $input['bookingId'] = $bookings->id;
         $answer = answer::create($input);
