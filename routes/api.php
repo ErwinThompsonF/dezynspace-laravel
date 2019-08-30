@@ -29,11 +29,13 @@ use Illuminate\Http\Request;
 
     Route::group(['middleware' => 'auth:api'], function () {
 
-        Route::get('/validate-token', function () {
-            return ['message' => 'Token is valid'];
-        });
+
         
         Route::group(['middleware' => 'scope:Admin'], function () {
+
+            Route::get('/atoken', function () {
+                return ['message' => 'Token is valid'];
+            });
 
             // DESIGNER
             Route::post('designer', 'UserController@Create');
@@ -55,6 +57,11 @@ use Illuminate\Http\Request;
         });
 
         Route::group(['middleware' => 'scope:Clients'], function () {
+
+            Route::get('/ctoken', function () {
+                return ['message' => 'Token is valid'];
+            });
+
             Route::post('booking', 'BookingController@Create');
 
         });
