@@ -32,7 +32,7 @@ trait PaymentTrait
         $transaction->setAmount($amount)->setItemList($itemList)
         ->setDescription('Laravel Paypal Payment Tutorial');
         $redirect_urls = new RedirectUrls();
-        $redirect_urls->setReturnUrl("http://localhost:8000/api/confirm")
+        $redirect_urls->setReturnUrl("http://localhost:3000/confirm")
         ->setCancelUrl(url()->current());
         $payment = new Payment();
         $payment->setIntent('Sale')->setPayer($payer)->setRedirectUrls($redirect_urls)

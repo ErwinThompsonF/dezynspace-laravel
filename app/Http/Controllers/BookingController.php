@@ -68,7 +68,7 @@ class BookingController extends Controller
 
         $payment = PaymentTrait::createPayment($input['price'], $this->api_context);
 
-        return response()->json(["message" =>  $bookings && $answer ? $payment : "Internal Server Error"], $bookings && $answer ? 200 : 500);
+        return response()->json(["message" =>  $bookings && $answer ? ["paypal" => $payment, "id" => $bookings->id] : "Internal Server Error"], $bookings && $answer ? 200 : 500);
     }
 
     public function Read()
