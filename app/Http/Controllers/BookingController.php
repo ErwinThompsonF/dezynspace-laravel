@@ -79,7 +79,7 @@ class BookingController extends Controller
 
     public function UpdateShow($id)
     {
-        $bookings = booking::find($id)->with('client');
+        $bookings = booking::with('client')->find($id);
         $schedule = schedule::selectRaw('count(schedule) as schedulecount,designerId,status')
                 ->whereBetween('schedule', array($bookings->start_date, $bookings->end_date))
                 ->with('designer.user')
