@@ -80,7 +80,7 @@ class BookingController extends Controller
 
     public function ReadC(Request $request)
     {
-        $bookings = booking::with('designer')->where('clientId', $request->user()->id)->get();
+        $bookings = booking::with('designer.user')->where('clientId', $request->user()->id)->get();
         return response()->json(["message" => $bookings ? $bookings : "Internal Server Error"], $bookings ? 200 : 500);
     }
 
