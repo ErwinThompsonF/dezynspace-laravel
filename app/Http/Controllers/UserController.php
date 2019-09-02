@@ -155,13 +155,15 @@ class UserController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'designerId' => 'required|numeric',
-            'schedule' => 'required|array'
+            'start_date' => 'required|string'
+            'end_date' => 'required|string'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 412);
         }
+        $period = new CarbonPeriod($input['start_date'], '1 day', $input['end_date']);        
         $input2 = $input['designId'];
-        $designer = collect($input['schedule'])->each(function ($value) use ($input2) {
+        $designer = collect($period)->each(function ($value) use ($input2) {
             $input['schedule'] = $value;
             $input['status'] = 1;
             $input['designerId'] = $input2;
