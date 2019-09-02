@@ -9,6 +9,8 @@ use App\User;
 use App\Address;
 use App\Designer;
 use App\Schedule;
+use Carbon\CarbonPeriod;
+
 
 class UserController extends Controller
 {
@@ -124,11 +126,14 @@ class UserController extends Controller
             'company' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'type' => 'required|boolean',
-            'schedule' => 'required|array'
+            'start_date' => 'required|string',
+            'end_date' => 'required|string'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 412);
         }
+
+        $period = new CarbonPeriod($input['start_date'], '1 day', $input['end_date']);
 
         $input['password'] = bcrypt($input['first_name']);
         $input['roleId'] = 3;
@@ -136,13 +141,12 @@ class UserController extends Controller
         $input['userId'] = $user->id;
         $address = address::create($input);
         $designer = designer::create($input);
-        $schedule = collect($input['schedule'])->each(function ($value) use ($designer) {
+        $schedule = collect($period)->each(function ($value) use ($designer) {
             $input['schedule'] = $value;
             $input['status'] = 1;
             $input['designerId'] = $designer->id;
             schedule::create($input);
         });
-
         return response()->json(["message" => $address && $user ? "Added a designer succesfully" : "Internal Server Error"], $address && $user ? 200 : 500);
     }
 
