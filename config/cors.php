@@ -13,11 +13,11 @@ return [
     */
    
     'supportsCredentials' => false,
-    'allowedOrigins' => ['http://localhost:3000', 'http://ec2-3-15-169-11.us-east-2.compute.amazonaws.com:3000/'],
+    'allowedOrigins' => ['http://localhost:3000', 'http://ec2-3-15-169-11.us-east-2.compute.amazonaws.com:3000'],
     'allowedOriginsPatterns' => [],
     'allowedHeaders' => ['Content-Type','Authorization'],
     'allowedMethods' => ['GET','POST','PUT','DELETE'],
     'exposedHeaders' => [],
-    'maxAge' => 0,
+    'maxAge' => 0,  
 
 ];
