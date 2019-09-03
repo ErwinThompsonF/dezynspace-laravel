@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\User;
 use App\Address;
 use App\Designer;
@@ -105,6 +106,15 @@ class UserController extends Controller
         $input['userId'] = $user->id;
         $address = address::create($input);
 
+        $to_name = $input['last_name'] . ", " . $input['first_name'];
+        $to_email = $input['email'];
+        $data = array("name"=>$to_name, "body" => "TESTING 123");
+        Mail::send('emails.mail', $data, function($message) use ($to_name, $to_email) {
+        $message->to($to_email, $to_name)
+        ->subject("tesing123");
+        $message->from('dezynspace@gmail.com',"Register");
+        });
+
         return response()->json(["message" => $address && $user ? "Registered succesfully" : "Internal Server Error"], $address && $user ? 200 : 500);
     }
 
@@ -155,7 +165,7 @@ class UserController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'designerId' => 'required|numeric',
-            'start_date' => 'required|string'
+            'start_date' => 'required|string',
             'end_date' => 'required|string'
         ]);
         if ($validator->fails()) {

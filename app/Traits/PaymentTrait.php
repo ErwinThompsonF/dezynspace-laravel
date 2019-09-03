@@ -30,7 +30,7 @@ trait PaymentTrait
         $amount->setCurrency('USD')->setTotal($pay_amount);
         $transaction = new Transaction();
         $transaction->setAmount($amount)->setItemList($itemList)
-        ->setDescription('Laravel Paypal Payment Tutorial');
+        ->setDescription('Dezynspace Graphic Design');
         $redirect_urls = new RedirectUrls();
         $redirect_urls->setReturnUrl("http://localhost:3000/confirm")
         ->setCancelUrl(url()->current());
