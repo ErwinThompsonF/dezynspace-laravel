@@ -162,7 +162,7 @@ class BookingController extends Controller
         $bookings->status = $input['status'];
         $bookings->save();
 
-        return response()->json(["message" => $schedule && $bookings ?  "Booking updated successfully"  : "Internal Server Error"], $schedule && $bookings ? 200 : 500);
+        return response()->json(["message" => $bookings ?  "Booking updated successfully"  : "Internal Server Error"], $bookings ? 200 : 500);
     }
 
 }
