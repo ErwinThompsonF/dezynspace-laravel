@@ -184,7 +184,7 @@ class UserController extends Controller
 
     public function Read()
     {
-        $designer = designer::with('user')->get();
+        $designer = designer::with(['user', 'schedules'])->get();
         return response()->json(["message" => $designer ? ["designer" => $designer] : "Internal Server Error"], $designer ? 200 : 500);
     }
 
