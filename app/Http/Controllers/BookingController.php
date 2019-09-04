@@ -121,7 +121,7 @@ class BookingController extends Controller
         $bookings = booking::find($id);
        
 
-        if($input['status'] == 'assign')
+        if($input['status'] == 'assigned')
         {
             $schedule = schedule::whereBetween('schedule', array($input['start_date'], $input['end_date']))
             ->where('designerId', $input['designerId'])
