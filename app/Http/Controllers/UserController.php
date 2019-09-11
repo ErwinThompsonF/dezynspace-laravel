@@ -190,7 +190,7 @@ class UserController extends Controller
 
     public function UpdateShow($id)
     {
-        $designer = designer::with(['schedules', 'user'])->find($id);
+        $designer = designer::with(['schedules', 'user', 'user.address'])->find($id);
         return response()->json(["message" => $designer? $designer : "Internal Server Error"], $designer ? 200 : 500);
     }
 
